@@ -1,0 +1,1 @@
+contour(flipud(output), 30);
