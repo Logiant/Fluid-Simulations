@@ -1,3 +1,2 @@
 ﻿  Main.cpp
-c:\users\logan\documents\github\fluid-simulations\basicflow\fluidflow\main.cpp(39): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
   FluidFlow.vcxproj -> C:\Users\Logan\Documents\GitHub\Fluid-Simulations\BasicFlow\Debug\FluidFlow.exe

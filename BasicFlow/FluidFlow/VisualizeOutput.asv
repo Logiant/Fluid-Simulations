@@ -1,0 +1,3 @@
+output = csvread('output.txt');
+output = output(
+contour(flipud(output), 30);

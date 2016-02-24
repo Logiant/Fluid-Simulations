@@ -5,12 +5,19 @@
 
 FlowField::FlowField(int width_, int height_) {
 	width = width_; height = height_;
-	field = new double[width*height];
-	fieldFlag = new bool[width*height];
+	field = new Node[width*height];
 
 	for (int i = 0; i < width*height; i++) {
-		field[i] = -1;
-		fieldFlag[i] = false;
+	//	field[i] = Node();
+		field[i].value = -1;
+		field[i].boundary = false;
+		if (i > width && i < (width*height - 1) - width //not the top or bottom row
+			&& i % width != 0 && (i+1) % width != 0) { //not the left or right side
+			field[i].leftNeighbor = &field[i - 1];
+			field[i].rightNeighbor = &field[i + 1];
+			field[i].topNeighbor = &field[i - width];
+			field[i].bottomNeighbor = &field[i + width];
+		}
 	}
 
 }
@@ -18,7 +25,6 @@ FlowField::FlowField(int width_, int height_) {
 
 FlowField::~FlowField() {
 	delete[] field;
-	delete[] fieldFlag;
 }
 
 void FlowField::addBC(int x0, int y0, int bc_width, int bc_height, BC_SETUP bs) {
@@ -32,12 +38,12 @@ void FlowField::addBC(int x0, int y0, int bc_width, int bc_height, BC_SETUP bs) 
 				if (bc_height > 1) {
 					phiNew = bs.phi_min + ((bs.phi_max - bs.phi_min) * (((double)((bc_height - yi - 1) - y0)) / (bc_height - 1)));
 				}
-				field[i2o(xi, yi)] = phiNew;
-				fieldFlag[i2o(xi, yi)] = true;
+				field[i2o(xi, yi)].value = phiNew;
+				field[i2o(xi, yi)].boundary= true;
 				break;
 			case BoundaryCondition::OBSTACLE:
-				field[i2o(xi, yi)] = phiNew;
-				fieldFlag[i2o(xi, yi)] = true;
+				field[i2o(xi, yi)].value = phiNew;
+				field[i2o(xi, yi)].boundary = true;
 				break;
 			}
 		}
@@ -45,7 +51,7 @@ void FlowField::addBC(int x0, int y0, int bc_width, int bc_height, BC_SETUP bs) 
 }
 
 
-double* FlowField::solve(double thresh) {
+Node* FlowField::solve(double thresh) {
 	double* error = new double[width*height];
 	double* old = new double[width*height];
 	memcpy(error, field, width*height);
@@ -61,15 +67,15 @@ double* FlowField::solve(double thresh) {
 
 		for (int i = 1; i < width - 1; i++) {
 			for (int j = 1; j < height - 1; j++) {
-				//check if this value is a BC (uneditable)
-				bool check = fieldFlag[i2o(i, j)];
+				//check if this value is a BC (don't update it)
+				Node* thisNode = &field[i2o(i, j)];
 
-				if (!check) {
-					field[i2o(i, j)] = (field[i2o(i + 1, j)] + field[i2o(i - 1, j)] + field[i2o(i, j + 1)] + field[i2o(i, j - 1)]) / 4;
+				if (!thisNode->boundary) { //if this isn't a specified boundary condition
+					thisNode->value = 0.25*(thisNode->bottomNeighbor->value + thisNode->topNeighbor->value + thisNode->leftNeighbor->value + thisNode->rightNeighbor->value);
 				}
 
-				error[i2o(i, j)] = field[i2o(i, j)] - old[i2o(i, j)];
-				old[i2o(i, j)] = field[i2o(i, j)];
+				error[i2o(i, j)] = thisNode->value - old[i2o(i, j)];
+				old[i2o(i, j)] = thisNode->value;
 			}
 		} //End current iteration
 

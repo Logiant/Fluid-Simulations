@@ -1,5 +1,8 @@
 #pragma once
 struct BC_SETUP;
+struct Node;
+
+
 
 class FlowField
 {
@@ -15,7 +18,7 @@ public:
 
 	void addBC(int x, int y, int width, int height, BC_SETUP bc);
 
-	double* solve(double thresh);
+	Node* solve(double thresh);
 
 	double findMax(double* arr, int numVals);
 
@@ -24,10 +27,8 @@ public:
 
 private:
 	int width, height;
-	double phiMax, phiMin;
 
-	double* field;
-	bool* fieldFlag;
+	Node* field;
 
 };
 
@@ -37,3 +38,11 @@ struct BC_SETUP {
 	double phi_max;
 };
 
+struct Node {
+	Node* topNeighbor;
+	Node* bottomNeighbor;
+	Node* leftNeighbor;
+	Node* rightNeighbor;
+	bool boundary;
+	double value;
+};
