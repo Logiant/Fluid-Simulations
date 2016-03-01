@@ -13,18 +13,23 @@ int main(int argc, int* argv) {
 	time_t start = time(0);
 	int width = 100; int height = 100;
 
+	//NACA width
+	width = 400;
+	
 	std::cout << "beginning with a " << width << "x" << height << " grid\n";
 
 	FlowField flow(width, height);
 
 	//apply BC function
 	//FlowOverBlock(&flow, width, height);
-	IrrotationalVortex(&flow, width, height);
+	//IrrotationalVortex(&flow, width, height);
+	//AngledPlate(&flow, width, height);
+	NACA0012(&flow, width, height);
 
 	std::cout << "BC Setup at " << difftime(time(0), start) << " seconds\n";
 
 	//solve the flowfield and print time info
-	double threshold = 0.001;
+	double threshold = 0.00001;
 
 	Node* ff = flow.solve(threshold);
 
@@ -49,6 +54,4 @@ int main(int argc, int* argv) {
 	std::cout << "\nEnter a char to exit.\n";
 	int a;
 	std::cin >> a;
-
-
 }
