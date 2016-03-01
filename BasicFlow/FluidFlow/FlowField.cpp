@@ -8,7 +8,6 @@ FlowField::FlowField(int width_, int height_) {
 	field = new Node[width*height];
 
 	for (int i = 0; i < width*height; i++) {
-	//	field[i] = Node();
 		field[i].value = -1;
 		field[i].boundary = false;
 		if (i > width && i < (width*height - 1) - width //not the top or bottom row
@@ -42,6 +41,7 @@ void FlowField::addBC(int x0, int y0, int bc_width, int bc_height, BC_SETUP bs) 
 				field[i2o(xi, yi)].boundary= true;
 				break;
 			case BoundaryCondition::OBSTACLE:
+			case BoundaryCondition::POINT:
 				field[i2o(xi, yi)].value = phiNew;
 				field[i2o(xi, yi)].boundary = true;
 				break;
@@ -52,6 +52,7 @@ void FlowField::addBC(int x0, int y0, int bc_width, int bc_height, BC_SETUP bs) 
 
 
 Node* FlowField::solve(double thresh) {
+
 	double* error = new double[width*height];
 	double* old = new double[width*height];
 	memcpy(error, field, width*height);
@@ -63,6 +64,8 @@ Node* FlowField::solve(double thresh) {
 
 	double err = 100.0;
 
+	int numIter = 0;
+
 	while (err > thresh) {
 
 		for (int i = 1; i < width - 1; i++) {
@@ -70,7 +73,7 @@ Node* FlowField::solve(double thresh) {
 				//check if this value is a BC (don't update it)
 				Node* thisNode = &field[i2o(i, j)];
 
-				if (!thisNode->boundary) { //if this isn't a specified boundary condition
+				if (!(thisNode->boundary)) { //if this isn't a specified boundary condition
 					thisNode->value = 0.25*(thisNode->bottomNeighbor->value + thisNode->topNeighbor->value + thisNode->leftNeighbor->value + thisNode->rightNeighbor->value);
 				}
 
@@ -81,7 +84,11 @@ Node* FlowField::solve(double thresh) {
 
 
 		err = findMax(error, width*height);
+
+		numIter++;
 	}
+
+	std::cout << numIter << " iterations\n";
 
 	delete[] error;
 

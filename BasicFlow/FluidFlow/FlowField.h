@@ -9,7 +9,7 @@ class FlowField
 public:
 
 	enum BoundaryCondition {
-		HORIZONTAL_FLOW, OBSTACLE
+		HORIZONTAL_FLOW, OBSTACLE, POINT
 	};
 
 

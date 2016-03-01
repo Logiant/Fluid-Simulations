@@ -21,9 +21,15 @@
     <ClCompile Include="FlowField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BCSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlowField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BCSetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
